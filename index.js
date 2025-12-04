@@ -47,7 +47,16 @@ async function run() {
 
 
 
-        
+        app.get('/listings', async (req, res) => {
+            const { category } = req.query
+            console.log(category);
+            const query = {}
+            if (category) {
+                query.category = category
+            }
+            const result = await pawMartDB.find(query).toArray()
+            res.send(result)
+        })
 
 
 
