@@ -29,6 +29,29 @@ async function run() {
 
         await client.connect();
 
+        const database = client.db('pawMartDB')
+        const pawMartDB = database.collection('listings')
+
+
+        app.post('/listings', async (req, res) => {
+            const data = req.body;
+
+            const date = new Date();
+            data.createdAt = date;
+            console.log(data);
+            const result = await pawMartDB.insertOne(data)
+            res.send(result)
+        })
+
+
+
+
+
+        
+
+
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
