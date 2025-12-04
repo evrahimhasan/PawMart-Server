@@ -73,6 +73,20 @@ async function run() {
 
 
 
+
+        app.get('/my-listings', async (req, res) => {
+
+            const { email } = req.query
+            console.log(email);
+
+            const query = { email: email }
+            const result = await pawMartDB.find(query).toArray()
+            res.send(result)
+        })
+
+
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
