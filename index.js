@@ -87,6 +87,22 @@ async function run() {
 
 
 
+
+        app.put('/update/:id', async (req, res) => {
+            const data = req.body
+            console.log(data);
+            const id = req.params
+            const query = { _id: new ObjectId(id) }
+            const updatedListing = {
+                $set: data
+            }
+            const result = await pawMartDB.updateOne(query, updatedListing)
+            res.send(result)
+        })
+
+
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
