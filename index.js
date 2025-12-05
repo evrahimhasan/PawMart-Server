@@ -31,6 +31,7 @@ async function run() {
 
         const database = client.db('pawMartDB')
         const pawMartDB = database.collection('listings')
+        const orderCollection = database.collection('orders')
 
 
         app.post('/listings', async (req, res) => {
@@ -108,6 +109,15 @@ async function run() {
             const id = req.params
             const query = { _id: new ObjectId(id) }
             const result = await pawMartDB.deleteOne(query)
+            res.send(result)
+        })
+
+
+
+        app.post('/orders', async (req, res) => {
+            const data = req.body
+            console.log(data);
+            const result = await orderCollection.insertOne(data)
             res.send(result)
         })
 
