@@ -61,6 +61,14 @@ async function run() {
 
 
 
+        app.get('/recent-listings', async (req, res) => {
+            const result = await pawMartDB.find().sort({ createdAt: 'desc' }).limit(6).toArray();
+            console.log(result);
+            res.send(result)
+        })
+
+
+
 
         app.get('/listings/:id', async (req, res) => {
             const id = req.params;
@@ -123,7 +131,7 @@ async function run() {
 
 
 
-        app.get('/orders', async(req, res)=>{
+        app.get('/orders', async (req, res) => {
             const result = await orderCollection.find().toArray()
             res.send(result)
         })
