@@ -142,6 +142,29 @@ async function run() {
 
 
 
+
+
+        // GET category counts
+        app.get('/category-counts', async (req, res) => {
+            const categories = ['Pets', 'Foods', 'Accessories', 'Care Products'];
+
+            const counts = await Promise.all(
+                categories.map(async (cat) => {
+                    const count = await pawMartDB.countDocuments({ category: cat });
+                    return { name: cat, count };
+                })
+            );
+
+            const result = categories.map(cat => {
+                const found = counts.find(c => c.name === cat);
+                return { name: cat, count: found ? found.count : 0 };
+            });
+
+            res.send(result);
+        });
+
+
+
         // Dashboard stats (for charts)
         app.get('/dashboard-stats', async (req, res) => {
             const totalListings = await pawMartDB.countDocuments({});
