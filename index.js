@@ -48,16 +48,44 @@ async function run() {
 
 
 
+
         app.get('/listings', async (req, res) => {
-            const { category } = req.query
-            console.log(category)
-            const query = {}
+            const { category, page = 1, limit = 8 } = req.query;
+            const pageNum = parseInt(page);
+            const limitNum = parseInt(limit);
+
+            const query = {};
             if (category) {
-                query.category = category
+                query.category = category;
             }
-            const result = await pawMartDB.find(query).toArray()
-            res.send(result)
-        })
+
+            const total = await pawMartDB.countDocuments(query);
+            const listings = await pawMartDB
+                .find(query)
+                .skip((pageNum - 1) * limitNum)
+                .limit(limitNum)
+                .toArray();
+
+            res.send({
+                total,
+                page: pageNum,
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum),
+                listings
+            });
+        });
+
+
+        // app.get('/listings', async (req, res) => {
+        //     const { category } = req.query
+        //     console.log(category)
+        //     const query = {}
+        //     if (category) {
+        //         query.category = category
+        //     }
+        //     const result = await pawMartDB.find(query).toArray()
+        //     res.send(result)
+        // })
 
 
 
