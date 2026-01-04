@@ -142,6 +142,53 @@ async function run() {
 
 
 
+        // Dashboard stats (for charts)
+        app.get('/dashboard-stats', async (req, res) => {
+            const totalListings = await pawMartDB.countDocuments({});
+            const totalOrders = await orderCollection.countDocuments({});
+
+            // Category wise listings (for Pie Chart)
+            const categoryCounts = await pawMartDB.aggregate([
+                { $group: { _id: "$category", count: { $sum: 1 } } }
+            ]).toArray();
+
+            const pieData = categoryCounts.map(item => ({
+                name: item._id || 'Others',
+                value: item.count
+            }));
+
+            // Last 7 days orders (for Line Chart)
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+            const dailyOrders = await orderCollection.aggregate([
+                {
+                    $match: { date: { $gte: sevenDaysAgo } }
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+                        count: { $sum: 1 }
+                    }
+                },
+                { $sort: { _id: 1 } }
+            ]).toArray();
+
+            const lineData = dailyOrders.map(item => ({
+                date: item._id,
+                orders: item.count
+            }));
+
+            res.send({
+                totalListings,
+                totalOrders,
+                pieData,
+                lineData
+            });
+        });
+
+
+
 
 
         // await client.db("admin").command({ ping: 1 });
